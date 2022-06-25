@@ -55,15 +55,14 @@ export default function App() {
 
 	let [inputName, setInputName] = React.useState('')
 	const onPressButton = () => {
-    Keyboard.dismiss()
+    	Keyboard.dismiss()
 		//ตรวจสอบค่าจาก State
 		if (!(inputName === '')) {
 			data.push({ name: inputName, price: "<15" })
-      setInputName('')
+      		setInputName('')
 		} else {
-			msg = 'Empty input'
-      Alert.alert(msg)
-    }
+      		Alert.alert('Empty input', 'Please insert an input.')
+    	}
 	}
 
 	return (
