@@ -1,13 +1,19 @@
 import React from 'react'
+import * as updateWL from './updateWatchlist'
 import { View, StyleSheet, FlatList, TouchableOpacity, Button, Text, TextInput, Alert, Keyboard } from 'react-native'
 
 export default function App() {
+	//server location
+	let host = (Platform.OS == 'android') ? '10.0.2.2' : 'localhost'
+
+	//generate initial flatList
 	const [data, setData] = React.useState([
 		{ name: 'BTC (for test)', price: ">50000" },
 		{ name: 'ETH (for test)', price: "<1000" },
 		{ name: 'ADA (for test)', price: "<15" },
 		//{ name: '', price:  },
 	])
+	//Remove an item from flatList and database when long pressing an item in the flatList
 	const onPressItem = (itemToRemove) => {
         Alert.alert(
             'Removal Confirmation',
@@ -20,22 +26,24 @@ export default function App() {
               {
                 text: 'Confirm',
                 onPress: () => { 
-                  console.log(itemToRemove.name)
-                  console.log("..................................")
-                  console.log(data)  
-                  console.log("..................................") 
                   const filteredData = data.filter(function (el) {
                     return el.name !== itemToRemove.name ||
                            el.price !== itemToRemove.price
-                  })
-                  console.log(filteredData)
-                  console.log("..................................")                  
+                  })        
                   setData(filteredData)
+				  /*
+
+
+				  REMOVE itemToRemove FROM THE DATABASE
+
+
+				  */
                 }
               }
             ]
           )        
 	}
+	//icon for each item in the flatList
 	const renderFlatListItem = (data) => {
 		//อ่านอักขระตัวแรกของชื่อสินค้า ไปใส่ใน Shape Drawable
 		let firstLetter = String(data.item.name).substring(0, 1)
@@ -53,18 +61,27 @@ export default function App() {
 		)
 	}
 
+	//insert an item from inputText to flatList and database
 	let [inputName, setInputName] = React.useState('')
 	const onPressButton = () => {
     	Keyboard.dismiss()
 		//ตรวจสอบค่าจาก State
 		if (!(inputName === '')) {
-			data.push({ name: inputName, price: "<15" })
-      		setInputName('')
+			if (inputName.indexOf('>') > -1) {
+				var inputArray=inputName.split('>')
+				updateWL.insertToList(inputArray[0], '>', inputArray[1], data, setInputName, host)
+			} else if (inputName.indexOf('<') > -1) {
+				var inputArray=inputName.split('<')
+				updateWL.insertToList(inputArray[0], '<', inputArray[1], data, setInputName, host)
+			} else {
+				Alert.alert('Invalid format', 'Please follow the correct format.')
+			}
 		} else {
       		Alert.alert('Empty input', 'Please insert an input.')
     	}
 	}
 
+	//UI
 	return (
 		<View style={styles.container}>
       <View style={{flexDirection:'row',justifyContent:'space-between'}} >
