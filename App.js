@@ -26,18 +26,7 @@ export default function App() {
               {
                 text: 'Confirm',
                 onPress: () => { 
-                  const filteredData = data.filter(function (el) {
-                    return el.name !== itemToRemove.name ||
-                           el.price !== itemToRemove.price
-                  })        
-                  setData(filteredData)
-				  /*
-
-
-				  REMOVE itemToRemove FROM THE DATABASE
-
-
-				  */
+					updateWL.removeFromList(data, setData, itemToRemove, host)
                 }
               }
             ]
